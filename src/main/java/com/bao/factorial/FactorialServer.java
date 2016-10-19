@@ -13,15 +13,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.bao.discard;
+package com.bao.factorial;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -30,12 +26,13 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 /**
- * Discards any incoming data.
+ * Receives a sequence of integers from a {@link FactorialClient} to calculate
+ * the factorial of the specified integer.
  */
-public final class DiscardServer {
+public final class FactorialServer {
 
     static final boolean SSL = System.getProperty("ssl") != null;
-    static final int PORT = Integer.parseInt(System.getProperty("port", "8009"));
+    static final int PORT = Integer.parseInt(System.getProperty("port", "8322"));
 
     public static void main(String[] args) throws Exception {
         // Configure SSL.
@@ -54,28 +51,12 @@ public final class DiscardServer {
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new ChannelInitializer<SocketChannel>() {
-                 @Override
-                 public void initChannel(SocketChannel ch) {
-                     ChannelPipeline p = ch.pipeline();
-                     if (sslCtx != null) {
-                         p.addLast(sslCtx.newHandler(ch.alloc()));
-                     }
-                     p.addLast(new DiscardServerHandler());
-                 }
-             });
+             .childHandler(new FactorialServerInitializer(sslCtx));
 
-            // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(PORT).sync();
-
-            // Wait until the server socket is closed.
-            // In this example, this does not happen, but you can do that to gracefully
-            // shut down your server.
-            f.channel().closeFuture().sync();
+            b.bind(PORT).sync().channel().closeFuture().sync();
         } finally {
-            workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
         }
     }
-
 }

@@ -18,6 +18,7 @@ package com.bao.discard;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.ReferenceCountUtil;
 
 /**
  * Handles a server-side channel.
@@ -27,7 +28,21 @@ public class DiscardServerHandler extends SimpleChannelInboundHandler<Object> {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         // Discard the received data silently.
-        ((ByteBuf) msg).release(); // (3)
+//        ((ByteBuf) msg).release(); // (3)
+        ByteBuf in = (ByteBuf) msg;
+        try {
+            //在合适的地方,补上 ByteBuf.retain(); 这个意思是 让netty的引用计数+1..报错的地方是因为想减1,但是没得减,在你的decoder补上
+            //或者extends ChannelInboundHandlerAdapter，不要extends SimpleChannelInboundHandler
+            in.retain();
+            System.out.println(in.toString(io.netty.util.CharsetUtil.US_ASCII));
+//            while (in.isReadable()) { // (1)
+//                System.out.print((char) in.readByte());
+//                System.out.flush();
+//            }
+        } finally {
+
+            ReferenceCountUtil.release(msg); // (2)
+        }
     }
 
     @Override
