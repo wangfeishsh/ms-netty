@@ -1,5 +1,6 @@
 http://ifeve.com/netty5-user-guide/
 http://netty.io/wiki/user-guide.html
+https://github.com/wuyinxian124/nettybook2
 
 Java1.4以前问题
 1. 无数据缓冲区，存在IO性能问题
@@ -59,3 +60,29 @@ epoll优势
 3. 使用mmap加速内核用户空间的消息传递
 4. epoll的api更简单
 
+NIO类库简介（new io or non-block io）
+
+1. Buffer 缓冲区
+
+在面向流IO中，数据的读取与写入都是在stream对象中进行的，而NIO中，数据都是通过缓冲区操作的，它实质上是一个数组（当然它不仅仅是数组，还
+提供了对数据结构化访问以及维护读写位置的信息）
+
+* ByteBuffer
+* CharBuffer
+* ShortBuffer
+* IntBuffer
+* LongBuffer
+* FloatBuffer
+* DoubleBuffer
+
+2. Channel通道
+
+网络数据通过Channel读写，Channel是全双工，可以用于读写或者二者同时进行，而流只在一个方向流动
+
+3. Selector 多路复用器
+
+多路复用器提供选择已经就绪的任务的能力。简单来讲，Selector会不断轮询注册在其上的Channel，如果某个Channel上面发生
+读或者写事件，这个Channel就会处于就绪状态，会被Selector轮询出来，然后通过SelectionKey可以获取就绪的Channel集合，
+进行后续的IO操作。
+
+![](images/IO%20sequence.png)
