@@ -2,6 +2,10 @@ http://ifeve.com/netty5-user-guide/
 http://netty.io/wiki/user-guide.html
 https://github.com/wuyinxian124/nettybook2
 
+[高性能IO模型浅析](http://www.cnblogs.com/fanzhidongyzby/p/4098546.html)
+
+[IO - 同步，异步，阻塞，非阻塞 （亡羊补牢篇）](http://blog.csdn.net/historyasamirror/article/details/5778378)
+
 Java1.4以前问题
 1. 无数据缓冲区，存在IO性能问题
 2. 无C/C++中的channel概念，只有stream
@@ -86,3 +90,7 @@ NIO类库简介（new io or non-block io）
 进行后续的IO操作。
 
 ![](images/IO%20sequence.png)
+
+NIO2.0
+
+对应与UNIX事件驱动IO（AIO）。它不需要通过多路复用器Selector对注册的通道进行轮询操作即可实现异步读写
