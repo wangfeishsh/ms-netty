@@ -1,5 +1,7 @@
 http://ifeve.com/netty5-user-guide/
+
 http://netty.io/wiki/user-guide.html
+
 https://github.com/wuyinxian124/nettybook2
 
 [高性能IO模型浅析](http://www.cnblogs.com/fanzhidongyzby/p/4098546.html)
@@ -94,3 +96,51 @@ NIO类库简介（new io or non-block io）
 NIO2.0
 
 对应与UNIX事件驱动IO（AIO）。它不需要通过多路复用器Selector对注册的通道进行轮询操作即可实现异步读写
+
+netty or java io选择
+
+
+TCP 粘包/拆包
+1. 导致原因
+*  缓冲区划分，应用程序写入字节大小大于套接口发送缓冲区大小
+*  进行MSS大小的TCP分段
+*  以太网帧的payload大于MTU进行IP分段
+
+
+MTU：maximum transmission unit，最大传输单元，由硬件规定，如以太网的MTU为1500字节。
+MSS：maximum segment size，最大分节大小，为TCP数据包每次传输的最大数据分段大小，一般由发送端向对端TCP通知对端在每个分节中能发送的最大TCP数据。MSS值为MTU值减去IPv4 Header（20 Byte）和TCP header（20 Byte）得到。
+分片：若一IP数据报大小超过相应链路的MTU的时候，IPV4和IPV6都执行分片(fragmentation)，各片段到达目的地前通常不会被重组(re-assembling)。IPV4主机对其产生的数据报执行分片，IPV4路由器对其转发的数据也执行分片。然而IPV6只在数据产生的主机执行分片；IPV6路由器对其转发的数据不执行分片。
+
+例如：一个以太网上的主机和一个令牌环网上的主机间建立连接，其中以太网上主机通告的MSS为1460，令牌环网上主机通告的MSS为4096。观察分组，在两个方向上都找不到大于1460字节的数据，为什么？
+        令牌环网上发送到以太网的数据大小不大于1460字节的原因是因为以太网上主要通告的MSS值就为1460个字节，所以令牌环网上发送出去的数据的长度不能够大于MSS值；令牌环网上主机通告的MSS值为4096，也即是说以太网能够发送到令牌环网上的TCP净荷值为4096，但是以太网的MTU值又是由硬件所决定的，最大只支持1500（包括IP头至少20B和TCP头至少20B），为避免分片，因此以太网发送到令牌环网的数据的净荷也为1500-20-20=1460B，所以两个方向的净数据长度不会大于1460字节。 
+
+![](images/mss.jpg)
+
+2. 问题解决策略
+* 消息定长
+* 在包尾增加回车换行符
+* 消息头和消息体，消息头中固定位置作为消息体的长度
+* 更复杂的应用层协议
+
+
+Netty利用LineBasedFrameDecoder等多种解码器解决TCP粘包
+1. LineBasedFrameDecoder依次遍历ByteBuff中的可读字节，判断是否有"\r\n"或者"\n",如果有，就以此位置为结束位置，
+    从可读索引到结束位置区间的字节就组成一行。
+    它是以换行符为结束标志的解码器，支持携带结束符或者不携带结束符两种解码方式，同时支持配置单行的最大长度。
+    如果连续读取到最大长度后仍然没有发现换行符，就会抛出异常，同时忽略之前读到的异常码流
+2. StringDecoder就是将接收到的对象转换成为字符串，然后继续调用后面的handler
+    
+DelimiterBasedFrameDecoder  分隔符
+
+FixedLengthFrameDecoder  定长 (如果是半包消息，则会等待下个包到达后进行拼包，直到读取一个完整的包)
+* 如何辨别包结束了？
+
+Netty编解码
+
+Java序列化的缺点 java.io.Serializable
+
+1. 无法跨语言
+2. 序列化后码流太大（例子貌似有点问题，序列化是整个对象，而另外的方法仅仅序列化了值）
+3. 序列化性能太低
+
+

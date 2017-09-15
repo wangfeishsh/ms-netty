@@ -13,14 +13,17 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.bao.time;
+package com.bao.chapter3;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.io.UnsupportedEncodingException;
 
 /**
  * Handler implementation for the echo server.
@@ -28,20 +31,28 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 @Sharable
 public class TimeServerHandler extends ChannelInboundHandlerAdapter {
 
-    @Override
-    public void channelActive(final ChannelHandlerContext ctx) { // (1)
-        final ByteBuf time = ctx.alloc().buffer(4); // (2)
-        time.writeInt((int) (System.currentTimeMillis() / 1000L + 2208988800L));
+    private int counter;
 
-        final ChannelFuture f = ctx.writeAndFlush(time); // (3) netty的write方法只是把带待发送的消息发送到缓冲区，再通过flush方法将消息全部写入SocketChannel中
-        f.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) {
-                assert f == future;
-                ctx.close();
-            }
-        }); // (4)
+    @Override
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws UnsupportedEncodingException {
+//        ByteBuf byteBuf = (ByteBuf) msg;
+//        byte[] req = new byte[byteBuf.readableBytes()];
+//        byteBuf.readBytes(req);
+//        String body = new String(req, "UTF-8").substring(0,req.length-System.getProperty("line.separator").length());
+        String body = (String) msg;
+        System.out.println("++++++" + body + "+++++" + counter++);
+//        String currentTime = "QUERY TIME ORDER".equalsIgnoreCase(body) ? new java.util.Date(
+//                System.currentTimeMillis()).toString() : "BAD ORDER";
+//        currentTime = currentTime + System.getProperty("line.separator");
+//        currentTime = currentTime + "$";
+//        ByteBuf resp = Unpooled.copiedBuffer(currentTime.getBytes());
+//        ctx.writeAndFlush(resp);
     }
+
+//    @Override
+//    public void channelReadComplete(ChannelHandlerContext ctx) {
+//        ctx.flush();
+//    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
