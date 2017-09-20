@@ -143,4 +143,10 @@ Java序列化的缺点 java.io.Serializable
 2. 序列化后码流太大（例子貌似有点问题，序列化是整个对象，而另外的方法仅仅序列化了值）
 3. 序列化性能太低
 
+业界主流编解码框架
+1. Google =  ProtoBuf
+2. Facebook = Thrift
+3. JBoss = Marshalling
+
+MessagePack编解码
 
