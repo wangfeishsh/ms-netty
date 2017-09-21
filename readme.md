@@ -148,5 +148,27 @@ Java序列化的缺点 java.io.Serializable
 2. Facebook = Thrift
 3. JBoss = Marshalling
 
-MessagePack编解码
+自定义长度报文编解码
+com.bao.fixLength
 
+NETTY && HTTP
+
+HTTP请求消息 (HttpRequest)
+* 请求行
+    Method Request-URI HTTP-VERSION CRLF(回车和换行)
+* 消息头
+* 请求正文
+
+![](images/http.jpg)
+
+HTTP响应消息 (HttpResponse)
+* 状态行
+* 消息报头
+* 响应正文
+
+user.dir是jvm的系统属性，我们知道System.property可以获取jvm系统属性值,
+所以System.property("user.dir")路径就是文件的默认保存路径。
+
+user.dir与user.home
+user.dir：用户的当前工作目录，在linux下与pwd(print working directory) 命令相同
+user.home:用户的主目录
