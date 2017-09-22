@@ -172,3 +172,20 @@ user.dir是jvm的系统属性，我们知道System.property可以获取jvm系统
 user.dir与user.home
 user.dir：用户的当前工作目录，在linux下与pwd(print working directory) 命令相同
 user.home:用户的主目录
+
+WebSocket
+
+HTTP协议的弊端
+* HTTP协议为半双工协议，不能在客户端服务端同时传输
+* HTTP消息冗长而繁琐
+* 针对服务器推送的黑客攻击，例如长时间轮询？
+
+Comet轮询技术（长连接）
+
+WebSocket特点
+* 单一的TCP连接，采用双向全双工通信
+* 对代理、防火墙和路由器透明
+* 无头部信息、Cookie和身份验证
+* 无安全开销
+* 通过"ping/pong"帧保持链路激活
+* 服务器可以主动传递消息给客户端，不再需要客户端轮询
