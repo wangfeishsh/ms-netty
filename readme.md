@@ -189,3 +189,19 @@ WebSocket特点
 * 无安全开销
 * 通过"ping/pong"帧保持链路激活
 * 服务器可以主动传递消息给客户端，不再需要客户端轮询
+
+WebSocket连接建立
+Upgrade:websocket
+
+ 私有协议栈开发
+ 
+ ![](images/netty%20sequence.png)
+ 
+ ServerBootstrap Builder模式
+ 
+ .channel(NioServerSocketChannel.class)反射创建NioServerSocketChannel类
+ 
+ [tcp连接的几个参数 ](TCP.md)
+ 
+ ![](images/serverbootstrap.png)
+ 
