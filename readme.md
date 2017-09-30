@@ -197,6 +197,8 @@ Upgrade:websocket
  
  ![](images/netty%20sequence.png)
  
+ Netty服务端
+ 
  ServerBootstrap Builder模式
  
  .channel(NioServerSocketChannel.class)反射创建NioServerSocketChannel类
@@ -205,3 +207,23 @@ Upgrade:websocket
  
  ![](images/serverbootstrap.png)
  
+ childHandler是NioServerSocketChannel对应的ChannelPipeline的Handler；
+ 父类中的Handler是客户端新接入的连接SocketChannel对应的ChannelPipeline的Handler
+ 
+ SelectionKey
+1. OP_READ = 1<<0;
+2. OP_WRITE = 1<<2;
+3. OP_CONNECT = 1<<3;
+4. OP_ACCEPT = 1<<4;
+
+Nett提供的主要TCP参数
+1. SO_TIMEOUT：控制读取操作将阻塞多少毫秒。如果返回值为0，计时器就被禁止了，该线程将无限期阻塞
+2. SO_SNDBUF：套接字使用的发送缓冲区大小
+3. SO_RCVBUF：套接字使用的接收缓冲区大小
+4. SO_REUSERADDR：用于决定如果网络上仍然有数据向旧的ServerSocket传输数据，是否允许新的ServerSocket绑定到与
+旧的ServerSocket同样的端口上。SO_REUSERADDR选项的默认值与操作系统有关，在某些操作系统中，允许重用端口，而在
+某些操作系统中不允许重用端口。
+5. CONNECT_TIMEOUT_MILLIS：客户端连接超时时间，由于NIO原生的客户端并不提供设置连接超时的接口，因此，Netty采用
+的是自定义连接超时定时器负责检测和超时控制.
+6. TCP_NODELAY：禁止或激活TCP_NODELAY套接字选项，它决定是否使用Nagle算法。如果是时延敏感型的应用，建议关闭Nagle算法。
+
